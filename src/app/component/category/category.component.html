@@ -5,17 +5,23 @@
 >
   <span class="visually-hidden">Loading...</span>
 </div>
-
+<br />
 <ul class="list-group" *ngIf="dataLoaded != false">
   <li class="list-group-item" style="text-align: center">
     <h4>Kategoriler</h4>
   </li>
-
   <li
-    style="cursor: pointer"
+    routerLink="/products"
+    [class]="getAllCategoryClass()"
+    (click)="CleanCurrentCategory()"
+  >
+    Tüm Ürünler
+  </li>
+  <li
     (click)="setCurrentCategory(category)"
-    [class]="getCurrentCategoryClass(category)"
+    routerLink="/products/category/{{ category.categoryId }}"
     *ngFor="let category of categories"
+    [class]="getCurrentCategoryClass(category)"
   >
     {{ category.categoryName }}
   </li>

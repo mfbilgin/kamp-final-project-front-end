@@ -14,11 +14,11 @@ export class CategoryComponent implements OnInit {
   constructor(private categoryService: CategoryService) {}
 
   ngOnInit(): void {
-    this.getCategories();
+    this.getCategory();
   }
 
-  getCategories() {
-    this.categoryService.getProduct().subscribe((response) => {
+  getCategory() {
+    this.categoryService.getCategories().subscribe((response) => {
       this.categories = response.data;
       this.dataLoaded = true;
     });
@@ -29,10 +29,21 @@ export class CategoryComponent implements OnInit {
   }
 
   getCurrentCategoryClass(category: Category) {
-    if (category == this.currentCategory) {
+    if (this.currentCategory == category) {
       return 'list-group-item active';
     } else {
       return 'list-group-item';
     }
+  }
+
+  getAllCategoryClass() {
+    if (!this.currentCategory) {
+      return 'list-group-item active';
+    } else {
+      return 'list-group-item';
+    }
+  }
+  CleanCurrentCategory() {
+    this.currentCategory = null;
   }
 }

@@ -1,5 +1,8 @@
 import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { ToastrService } from 'ngx-toastr';
 import { Product } from 'src/app/models/product';
+import { CartService } from 'src/app/services/cart/cart.service';
 import { ProductService } from 'src/app/services/product/product.service';
 @Component({
   selector: 'app-product',
@@ -9,11 +12,22 @@ import { ProductService } from 'src/app/services/product/product.service';
 export class ProductComponent implements OnInit {
   products: Product[] = [];
   dataLoaded = false;
-
-  constructor(private productService: ProductService) {}
+  filterText = '';
+  constructor(
+    private productService: ProductService,
+    private activatedRoute: ActivatedRoute,
+    private toastrService: ToastrService,
+    private cartService: CartService
+  ) {}
 
   ngOnInit(): void {
-    this.getProduct();
+    this.activatedRoute.params.subscribe((params) => {
+      if (params['categoryId']) {
+        this.getProductsByCategory(params['categoryId']);
+      } else {
+        this.getProduct();
+      }
+    });
   }
 
   getProduct() {
@@ -21,5 +35,23 @@ export class ProductComponent implements OnInit {
       this.products = response.data;
       this.dataLoaded = true;
     });
+  }
+
+  getProductsByCategory(categoryId: number) {
+    this.productService
+      .getProductByCategory(categoryId)
+      .subscribe((response) => {
+        this.products = response.data;
+        this.dataLoaded = true;
+      });
+  }
+
+  addToCart(product: Product) {
+    if (product.unitsInStock === 0) {
+      this.toastrService.error('Bu ürün stoklarda mevcut değil');
+    } else {
+      this.toastrService.success('Sepete Eklendi', product.productName);
+      this.cartService.addToCart(product);
+    }
   }
 }
